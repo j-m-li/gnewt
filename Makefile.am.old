@@ -1,0 +1,133 @@
+LIBS = -L/usr/local/lib -L/usr/X11R6/lib -lgtk -lgdk -rdynamic -lgmodule \
+	 -lglib -ldl -lXext -lX11 -lm
+
+SHLIBS = $(LIBS) -lc
+
+CFLAGS = $(RPM_OPT_FLAGS) -Wall 
+
+VERSION = @VERSION@
+CVSTAG = r$(subst .,-,$(VERSION))
+SONAME = @VERSION@
+VPATH = jml
+
+PROGS = test test_ja testgrid testtree
+WHIPTCLOBJS = gwhiptcl.o dialogboxes.o
+LIBNEWT = libgnewt.a
+LIBNEWTSH = libgnewt.so.$(VERSION)
+LIBNEWTSONAME = libgnewt.so.$(SONAME)
+LIBOBJS = newt.o button.o form.o checkbox.o entry.o label.o listbox.o \
+          scrollbar.o textbox.o scale.o grid.o windows.o buttonbar.o \
+	  checkboxtree.o
+
+SHCFLAGS = -fPIC
+
+prefix = /usr
+includedir = $(prefix)/include
+libdir = $(prefix)/lib
+bindir = $(prefix)/bin
+ARCHNAME = $(shell uname -m | sed 's/i.86/i386/')
+pythondir = $(prefix)/lib/python1.5
+pythonbindir = $(prefix)/lib/python1.5/lib-dynload
+
+#--------------------------------------
+
+SOURCES = $(subst .o,.c,$(TESTOBJS) $(NDIALOGOBJS) $(LIBOBJS))
+
+SHAREDDIR = shared
+SHAREDOBJS = $(patsubst %,$(SHAREDDIR)/%, $(LIBOBJS))
+
+TARGET= depend libgnewt.a $(PROGS)
+
+all:	$(TARGET) _gsnackmodule.so whiperl/whiperl.o
+
+test:	test.c $(LIBNEWT)
+	gcc -g -o test test.c $(LIBNEWT) $(LIBS) 
+
+test_ja:	test_ja.c $(LIBNEWT)
+	gcc -g -o test_ja test_ja.c $(LIBNEWT) $(LIBS)
+
+testgrid:	testgrid.c $(LIBNEWT)
+	gcc -g -o testgrid testgrid.c $(LIBNEWT) $(LIBS)
+
+testtree:	testtree.c $(LIBNEWT)
+	gcc -g -o testtree testtree.c $(LIBNEWT) $(LIBS)
+
+_gsnackmodule.so:   gsnackmodule.o $(LIBNEWTSH)
+	gcc --shared -o _gsnackmodule.so gsnackmodule.o -L . $(LIBNEWTSH)
+
+gsnackmodule.o:   gsnackmodule.c
+	gcc -I/usr/include/python1.5 -fPIC $(CFLAGS) -c gsnackmodule.c
+
+whiperl/whiperl.o:
+	gcc -shared -o dialogboxes.o dialogboxes.c
+	(cd whiperl; perl Makefile.PL; make)
+
+
+gwhiptcl.so: gwhiptcl.c $(LIBNEWTSH)
+	gcc -shared -o gwhiptcl.so gwhiptcl.c dialogboxes.c -L .\
+	$(GTK_LIBS) -lgnewt -ltcl -lpopt -lm
+
+$(LIBNEWT): $(LIBNEWT)($(LIBOBJS))
+
+%.o : %.c
+	$(CC) -c $(CFLAGS) -o $@ $<
+
+newt.o: newt.c Makefile
+	$(CC) $(CFLAGS) -c -o $@ $<
+
+veryclean: clean
+	rm -f .depend config.status config.cache \
+		Makefile.in Makefile
+
+clean:
+	rm -f $(PROGS) *.o $(LIBNEWT) core $(LIBNEWTSH)  \
+		$(SHAREDOBJS) *.so*
+	cd whiperl;make clean;cd ..
+depend:
+	$(CPP) $(CFLAGS) -M $(SOURCES) > .depend
+
+$(SHAREDDIR):
+	mkdir -p $(SHAREDDIR)
+
+sharedlib: $(LIBNEWTSH)
+
+$(LIBNEWTSH): $(SHAREDDIR) $(SHAREDOBJS)
+	gcc -shared -o $(LIBNEWTSH) -Wl,-soname,$(LIBNEWTSONAME) $(SHAREDOBJS) $(SHLIBS)
+
+$(SHAREDDIR)/%.o : %.c
+	$(CC) $(SHCFLAGS) -c $(CFLAGS) -o $@ $<
+
+$(SHAREDDIR)/newt.o: newt.c Makefile
+	$(CC) $(SHCFLAGS) $(CFLAGS)  -c -o $@ $<
+
+
+install: $(LIBNEWT) install-sh 
+	[ -d $(instroot)/$(bindir) ] || install -m 755 -d $(instroot)/$(bindir)
+	[ -d $(instroot)/$(libdir) ] || install -m 755 -d $(instroot)/$(libdir)
+	[ -d $(instroot)/$(includedir) ] || install -m 755 -d $(instroot)/$(includedir)
+	install -m 644 newt.h $(instroot)/$(includedir)
+	install -m 644 $(LIBNEWT) $(instroot)/$(libdir)
+
+install-sh: sharedlib gwhiptcl.so _gsnackmodule.so whiperl/whiperl.o
+	[ -d $(instroot)/$(libdir) ] || install -m 755 -d $(instroot)/$(libdir)
+	install -m 755 $(LIBNEWTSH) $(instroot)/$(libdir)
+	ln -sf $(LIBNEWTSH) $(instroot)/$(libdir)/libgnewt.so
+	[ -d $(instroot)/$(pythonbindir) ] || \
+		install -m 755 -d $(instroot)/$(pythonbindir)
+	install -m 755 _gsnackmodule.so $(instroot)/$(pythonbindir)
+	install -m 755 gsnack.py $(instroot)/$(pythondir)
+	install -m 755 gwhiptcl.so $(instroot)/$(libdir)
+	( cd whiperl; make install )
+
+archive:
+	@cvs tag -F $(CVSTAG)
+	@rm -rf /tmp/gnewt-$(VERSION) /tmp/newt
+	@cd /tmp; cvs export -r$(CVSTAG) gnewt; mv gnewt gnewt-$(VERSION)
+	@cd /tmp/gnewt-$(VERSION); autoconf
+	@cd /tmp; tar czSpf gnewt-$(VERSION).tar.gz gnewt-$(VERSION)
+	@rm -rf /tmp/gnewt-$(VERSION)
+	@cp /tmp/gnewt-$(VERSION).tar.gz .
+	@rm -f /tmp/gnewt-$(VERSION).tar.gz
+	@echo " "
+	@echo "The final archive is ./gnewt-$(VERSION).tar.gz."
+

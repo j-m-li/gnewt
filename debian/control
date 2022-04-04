@@ -1,0 +1,19 @@
+Source: gnewt
+Section: devel
+Priority: Optional
+Maintainer: O'ksi'D <nickasil@linuxave.net>
+Standards-Version: 2.4.0.0
+
+Package: libgnewt0.06
+Architecture: any
+Section: base
+Priority: Required
+Depends: ${shlibs:Depends}
+Description: Gtk Not Erik's Windowing Toolkit.  
+ gNewt is a windowing toolkit. 
+ It allows X-Window applications to easily use stackable windows,
+ push buttons, check boxes, radio buttons, lists, entry fields, labels,
+ and displayable text. Scrollbars are supported, and forms may be nested
+ to provide extra functionality. This package contains the shared library
+ for programs that have been built with gnewt.
+

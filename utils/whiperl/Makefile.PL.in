@@ -1,0 +1,17 @@
+use ExtUtils::MakeMaker;
+# See lib/ExtUtils/MakeMaker.pm for details of how to influence
+# the contents of the Makefile that is written.
+WriteMakefile(
+    'NAME'	=> 'whiperl',
+    'VERSION_FROM' => 'whiperl.pm', # finds $VERSION
+    'LIBS'	=> ['-lnewt -lslang -lpopt'],   # e.g., '-lm' 
+    'OBJECT'	=> '../common/dialogboxes.o whiperl.o',
+    'DEFINE'	=> '',     # e.g., '-DHAVE_SOMETHING' 
+    'INC'	=> '-I../../include/newt ',     # e.g., '-I/usr/include/other' 
+    'PREFIX'    => '/usr$(INST_ROOT)',
+    'INSTALLSITELIB' => '$(INST_ROOT)/usr/local/lib/site_perl',
+    'INSTALLSITEARCH' => '$(INST_ROOT)/usr/local/lib/site_perl/i386-linux',
+    'INSTALLMAN1DIR' => '$(INST_ROOT)/usr/local/man/man1',
+    'INSTALLMAN3DIR' => '$(INST_ROOT)/usr/local/man/man3',
+);
+

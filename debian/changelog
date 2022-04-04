@@ -1,0 +1,85 @@
+gnewt (0.06-1) unstable; urgency=low
+
+  * directory reorganization
+  * Oops, workaround for whiptail introduced in 0.05 are not needed,
+    I was using newt0.50-5 on my new potato system, newt0.50-13 version 
+    is fixed!!! :-(
+  * added gnewt.h and gnewt_pr.h
+  * Improvement of gNewt extensions (background XPM, window XPM, 
+    button XPM, colors and multiple top windows)
+  * added some sample apps (hello, install and edit)
+  * in textbox, now reflow uses the real string width to cut it
+  * all gnewt specific variables have been moved in a structure
+
+ -- O'ksi'D <nickasil@linuxave.net>  Fri, 12 May 2000 18:23:03 +0200
+
+gnewt (0.05-1) unstable; urgency=low
+
+  * fixed scale draw problem with whiptail
+  * some workaround for whiptail due to dialogbox.c
+  * suspend/resume will hide the main main window and some
+    signals will be ignored
+  * set the position of gNewt window at the screen center
+  * added a picture in large button
+  * first draft for gNewt specific extension to add a picture on 
+    the background
+  * child process will recieve a SIGKILL if it uses exit() to avoid
+    GDK problem 
+  * listbox now selects the current item during redrawing
+  * use strdup to assign the main toplevel window name (no more crash
+    at exit ;-)
+
+ -- O'ksi'D <nickasil@linuxave.net>  Mon, 24 Apr 2000 21:23:03 +0200
+
+gnewt (0.04-1) unstable; urgency=low
+  
+  * ported some fixes from newt-0.50.8 (Abramo)
+  * added a nice button callback (Abramo)
+  * fixed a listbox nasty bug (Abramo)
+  * Removed whiptail and tutorial
+  * dirty Makefile porting to automake
+  * gnewt.spec update (Chong-Hsien)
+  * fixed redraw problem in Textbox (Chong-Hsien)
+  * added a Japanese test program test_ja.c (Kazutomo)
+  * workaround in newtOpenWindow for whiptail windows placement
+  * removed fixed fonts and added real rc style support (Kazutomo)
+  * fixed bug in countItems in checkboxtree.c (Chong-Hsien)
+  * fixed bug in listBoxDestroy, now disconnect the signal before
+    freeing the item
+
+ -- O'ksi'D <nickasil@linuxave.net>  Fri, 21 Apr 2000 14:01:03 +0200
+
+gnewt (0.03-1) unstable; urgency=low
+ 
+  * bug fix in root text placement. 
+  * Add support for newt python and Tcl module.
+  * Add a new perl module "whiperl".
+  * Partial color support.
+
+ -- O'ksi'D <nickasil@linuxbox.com>  Sun, 23 Jan 2000 14:51:48 +0200
+
+gnewt (0.02-2) unstable; urgency=low
+
+  * changes in the documentation.
+
+ -- O'ksi'D <nickasil@linuxbox.com>  Fri, 31 Dec 1999 20:46:31 +0200
+
+gnewt (0.02-1) unstable; urgency=low
+
+  * XIM protocal compliant. Font size support. Bug fixes for whiptail.
+
+ -- O'ksi'D <nickasil@bluewin.ch>  Sat, 25 Dec 1999 18:24:28 +0200
+
+gnewt (0.01-2) unstable; urgency=low
+
+  * source code is clean and compatible with newt-0.50.
+
+ -- O'ksi'D <nickasil@bluewin.ch>  Mon, 1 Nov 1999 12:26:13 +0200
+
+gnewt (0.01-1) unstable; urgency=low
+
+  * new library package. Based on the Red Hat's newt-0.50 library
+    source code.  
+
+ -- O'ksi'D <nickasil@bluewin.ch>  Mon, 10 Oct 1999 12:26:13 +0200
+

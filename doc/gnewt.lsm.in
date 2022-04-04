@@ -1,0 +1,18 @@
+Begin3
+Title:          gnewt
+Version:        @MAJOR_VERSION@.@MINOR_VERSION@
+ 
+Entered-date:   15APR2000
+Description:    gNewt is a "newt-0.50" compatible "gtk+" based library.  
+                The purpose of this library is to use "newt" old console 
+		programs under X11.  
+Keywords:       newt compatible whiptail X11 gtk
+Author:         nickasil@linuxave.net (O'ksi'D)
+Maintained-by:  nickasil@linuxave.net (O'ksi'D)
+Primary-site:   http://www.oksid.ch/gnewt
+Alternate-site: http://gnewt.sourceforge.net
+
+Original-site:  http://www.oksid.ch/gnewt
+Platforms:      Linux
+Copying-policy: LGPL
+End

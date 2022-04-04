@@ -1,0 +1,75 @@
+%define version @MAJOR_VERSION@.@MINOR_VERSION@
+%define  RELEASE 1
+%define  rel     %{?CUSTOM_RELEASE} %{!?CUSTOM_RELEASE:%RELEASE}
+%define prefix   /usr
+
+Summary: A GTK+ based development library to replace newt.
+Name: gnewt
+Version: %{version}
+Release: %{rel}
+Copyright: LGPL
+Group: System Environment/Libraries
+URL: http://oksid.ch
+Source: http://oksid.ch/gnewt/gnewt-%{version}.tar.gz
+Requires: gtk+ 
+
+%package devel
+Summary: gNewt windowing toolkit development files.
+Requires: gtk+-devel
+Group: Development/Libraries
+BuildRoot: /var/tmp/newtroot
+
+%description
+gNewt is a replacment library for the text mode library newt.
+
+%description devel
+The gnewt-devel package contains the header files and libraries
+necessary for developing applications which use gnewt. 
+
+Install gnewt-devel if you want to develop applications which will
+use gnewt.
+
+%prep
+%setup
+%patch -p0
+
+%build
+rm ./configure.cache
+./configure 
+make
+
+%install
+rm -rf $RPM_BUILD_ROOT
+mkdir -p $RPM_BUILD_ROOT%{prefix}
+make prefix=$RPM_BUILD_ROOT%{prefix} install
+
+%clean
+rm -rf $RPM_BUILD_ROOT
+
+%post -p /sbin/ldconfig
+
+%postun -p /sbin/ldconfig
+
+%changelog
+*  Fri Dec 31 1999 O'ksi'D <nickasil@oksid.linuxbox.com>
+- version 0.02 released.
+
+* Mon Nov  1  1999 O'ksi'D <nickasil@bluewin.ch>
+- source code is clean, 0.01 release
+
+* Mon Oct  10 1999 O'ksi'D <nickasil@bluewin.ch> 
+- first beta release
+
+%files
+%defattr (-,root,root)
+%doc CHANGES COPYING
+%{prefix}/lib/libgnewt-@MAJOR_VERSION@.@MINOR_VERSION@.so.*
+%{prefix}/lib/python1.5/gsnack.py
+%{prefix}/lib/python1.5/lib-dynload/_gsnackmodule.so
+
+%files devel
+%defattr (-,root,root)
+# conflict with newt-devel package
+#/usr/include/newt.h
+%{prefix}/lib/libgnewt.a
+%{prefix}/lib/libgnewt.so

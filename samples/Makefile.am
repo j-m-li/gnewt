@@ -1,0 +1,2 @@
+
+SUBDIRS = edit install hello

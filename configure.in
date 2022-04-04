@@ -1,0 +1,72 @@
+dnl Process this file with autoconf to produce a configure script.
+dnl Process this file with autoconf to produce a configure script.
+
+AC_INIT(gnewt.spec.in)
+
+MAJOR_VERSION=0
+MINOR_VERSION=6
+MICRO_VERSION=1
+PACKAGE="gnewt"
+
+VERSION=$MAJOR_VERSION.$MINOR_VERSION.$MICRO_VERSION
+AC_SUBST(MAJOR_VERSION)
+AC_SUBST(MINOR_VERSION)
+AC_SUBST(MICRO_VERSION)
+
+AC_PROG_MAKE_SET
+AM_CONFIG_HEADER(config.h)
+AM_INIT_AUTOMAKE($PACKAGE, $VERSION)
+ALL_LINGUAS="en"
+
+AC_PROG_CC
+AC_STDC_HEADERS
+AC_FUNC_ALLOCA
+AC_PROG_INSTALL
+AC_PROG_LN_S
+# AM_GNU_GETTEXT
+AM_PROG_LIBTOOL
+
+AM_PATH_GLIB(1.2.0,,AC_MSG_ERROR([*** GLIB >= 1.2.0 not installed - please install first ***]))
+CFLAGS="$CFLAGS $GLIB_CFLAGS"
+LIBS="$LIBS $GLIB_LIBS"
+
+AM_PATH_GTK(1.2.0,,AC_MSG_ERROR([*** GTK+ >= 1.2.0 not installed - please install first ***]),gthread)
+CFLAGS="$CFLAGS $GTK_CFLAGS"
+LIBS="$LIBS $GTK_LIBS"
+
+AC_MSG_CHECKING(whether make is GNU Make)
+STRIP_BEGIN=
+STRIP_END=
+if $ac_make --version 2>/dev/null | grep '^GNU Make ' >/dev/null ; then
+        STRIP_BEGIN='$(strip'
+        STRIP_END=')'
+        AC_MSG_RESULT(yes)
+else
+        AC_MSG_RESULT(no)
+fi
+AC_SUBST(STRIP_BEGIN)
+AC_SUBST(STRIP_END)
+
+
+AC_OUTPUT([ \
+	Makefile \
+	gnewt.spec \
+	src/Makefile \
+	doc/Makefile \
+	src/common/Makefile \
+	src/gtk/Makefile \
+	utils/Makefile \
+	utils/common/Makefile \
+	utils/python/Makefile \
+	utils/tcl/Makefile \
+	utils/whiperl/Makefile.PL \
+	tests/Makefile \
+	samples/Makefile \
+	samples/edit/Makefile \
+	samples/install/Makefile \
+	samples/hello/Makefile \
+	include/gnewt/Makefile \
+	include/Makefile \
+	doc/gnewt.lsm \
+], [cd utils/whiperl && perl Makefile.PL])
+

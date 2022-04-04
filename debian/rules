@@ -1,0 +1,73 @@
+#!/usr/bin/make -f
+
+# debian/rules file for gtk+ Debian package
+# written April 1998 by Ben Gertzfield <che@debian.org
+
+version=0.06
+
+build: build-stamp
+build-stamp:
+	dh_testdir
+	./configure --prefix=/usr --sysconfdir=/etc --localstatedir=/var
+	$(MAKE)
+	touch build-stamp
+
+clean:
+	dh_testdir
+	dh_testroot
+	rm -f build-stamp install-stamp 
+	# Add here commands to clean up after the build process.
+	-$(MAKE) clean
+	-$(MAKE) distclean
+	find . -name '*.o' -o -name '_libs' -o -name '*.lo' -o -name '*.a' -o -name '.deps' | xargs rm -rf
+	dh_clean
+
+install: install-stamp
+install-stamp: build
+	dh_testdir
+	dh_testroot
+	dh_clean
+	$(MAKE) prefix=`pwd`/debian/tmp/usr \
+		sysconfdir=`pwd`/debian/tmp/etc \
+		localstatedir=`pwd`/debian/tmp/var \
+		INST_ROOT=`pwd`/debian/tmp \
+		install
+	touch install-stamp
+
+
+# Build architecture-independent files here.
+binary-indep: build install 
+# We have nothing to do by default.
+
+# Build architecture-dependent files here.
+binary-arch: build install libgnewt$(version)
+
+libgnewt$(version): build
+	dh_testdir -plibgnewt$(version) 
+	dh_testroot -plibgnewt$(version)
+	dh_installdirs -plibgnewt$(version) 
+
+	# Add here commands to install the files into debian/tmp
+	rm -rf debian/tmp/usr/bin debian/tmp/usr/lib/lib*.la \
+	    debian/tmp/usr/local/lib/site_perl/i386-linux/auto/whiperl/.packlist
+
+	dh_installdocs -plibgnewt$(version)
+	cp doc/gnewt.lsm debian/tmp/usr/share/doc/libgnewt$(version)/
+	cp README debian/tmp/usr/share/doc/libgnewt$(version)/
+
+	dh_installchangelogs -plibgnewt$(version)
+	dh_strip -plibgnewt$(version)
+	dh_compress -plibgnewt$(version)
+	dh_fixperms -plibgnewt$(version)
+	dh_installdeb -plibgnewt$(version)
+	dh_shlibdeps -plibgnewt$(version)
+	dh_gencontrol -plibgnewt$(version)
+	dh_makeshlibs -plibgnewt$(version) -V
+	dh_md5sums -plibgnewt$(version)
+	dh_builddeb -plibgnewt$(version)
+
+source diff:                                                                  
+	@echo >&2 'source and diff are obsolete - use dpkg-source -b'; false
+
+binary: binary-indep binary-arch
+.PHONY: build clean binary-indep binary-arch binary

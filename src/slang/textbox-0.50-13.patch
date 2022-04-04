@@ -1,0 +1,56 @@
+--- ../newt-0.50-13/textbox.c	Tue Aug 10 18:17:46 1999
++++ textbox.c	Tue May  9 01:42:30 2000
+@@ -14,6 +14,7 @@
+     newtComponent sb;
+     int topLine;
+     int textWidth;
++    int isActive;
+ };
+ 
+ static char * expandTabs(const char * text);
+@@ -101,8 +102,9 @@
+     tb->lines = NULL;
+     tb->topLine = 0;
+     tb->textWidth = width;
+-
++    tb->isActive = 0;
+     if (flags & NEWT_FLAG_SCROLL) {
++        co->takesFocus = 1;
+ 	co->width += 2;
+ 	tb->sb = newtVerticalScrollbar(co->left + co->width - 1, co->top, 
+ 			   co->height, COLORSET_TEXTBOX, COLORSET_TEXTBOX);
+@@ -319,7 +321,9 @@
+ 
+     er.result = ER_IGNORED;
+ 
+-    if (ev.when == EV_EARLY && ev.event == EV_KEYPRESS && tb->sb) {
++    if (ev.when == EV_EARLY && ev.event == EV_KEYPRESS && 
++		    tb->sb && tb->isActive) 
++    {
+ 	switch (ev.u.key) {
+ 	  case NEWT_KEY_UP:
+ 	    if (tb->topLine) tb->topLine--;
+@@ -366,6 +370,23 @@
+ 	    textboxDraw(co);
+ 	    
+ 	    er.result = ER_SWALLOWED;
++	}
++    }
++    /* support for scrolling when another widget has a scrollbar
++     * (O'ksi'D May 2000) */
++   if (ev.when == EV_NORMAL) {
++	switch(ev.event) {
++	case EV_FOCUS:
++		tb->isActive = 1;
++		textboxDraw(co);
++		er.result = ER_SWALLOWED;
++		break;
++
++	case EV_UNFOCUS:
++		tb->isActive = 0;
++		textboxDraw(co);
++		er.result = ER_SWALLOWED;
++		break;
+ 	}
+     }
+     return er;
