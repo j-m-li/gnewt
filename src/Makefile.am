@@ -1,3 +1,3 @@
 
-SUBDIRS = common gtk
+SUBDIRS = common gtk 
 

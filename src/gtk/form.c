@@ -626,6 +626,9 @@ void newtFormRun(newtComponent co, struct newtExitStruct *es)
 		gotoComponent(form, 0);
 	} else
 		gotoComponent(form, form->currComp);
+	
+	if (gnewt->currentWindow->top_widget)
+		gtk_widget_show_all(gnewt->currentWindow->top_widget);
 
 	while (!done) {
 		gtk_main();

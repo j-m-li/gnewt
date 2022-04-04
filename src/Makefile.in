@@ -83,7 +83,7 @@ STRIP_BEGIN = @STRIP_BEGIN@
 STRIP_END = @STRIP_END@
 VERSION = @VERSION@
 
-SUBDIRS = common gtk
+SUBDIRS = common gtk 
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = ../config.h
 CONFIG_CLEAN_FILES = 

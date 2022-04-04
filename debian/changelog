@@ -1,3 +1,9 @@
+gnewt (0.07-1) unstable; urgency=low
+
+  * draw root text in a fixed box
+
+ -- O'ksi'D <nickasil@linuxave.net>  Fri, 26 May 2000 14:23:03 +0200
+
 gnewt (0.06-1) unstable; urgency=low
 
   * directory reorganization

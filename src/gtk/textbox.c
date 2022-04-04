@@ -159,7 +159,7 @@ newtComponent newtTextbox(int left, int top, int width, int height,
 	tb->textWidth = width;
 	tb->label = NULL;
 
-	tb->widget = gtk_fixed_new();
+	tb->widget = NULL; /*gtk_fixed_new();*/
 	tb->parent = NULL;
 
 	if (flags & NEWT_FLAG_SCROLL) {
@@ -421,7 +421,8 @@ static void textboxDraw(newtComponent c)
 	GtkStyle *style;
 	GtkWidget *scrolled_win;
 
-	if (!tb->parent) {
+	if (!tb->widget || !GTK_IS_WIDGET(tb->widget)) {
+		tb->widget = gtk_fixed_new();
 		tb->parent = gnewt->currentParent;
 		if (c->width && c->height) {
 			gtk_widget_show(tb->widget);

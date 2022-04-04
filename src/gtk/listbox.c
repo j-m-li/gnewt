@@ -181,7 +181,7 @@ newtComponent newtListbox(int left, int top, int height, int flags)
 	}
 
 	li->sb = sb;
-	li->widget = gtk_list_new();
+	li->widget = NULL; /*gtk_list_new();*/
 	li->parent = NULL;
 
 	co->data = li;
@@ -435,8 +435,8 @@ int newtListboxAppendEntry(newtComponent co, const char *text,
 {
 	struct listbox *li = co->data;
 	struct items *item;
-	GtkStyle *style;
-	char *txt;
+	/*GtkStyle *style;*/
+	/*char *txt;*/
 
 	if (li->boxItems) {
 		for (item = li->boxItems; item->next != NULL;
@@ -445,6 +445,9 @@ int newtListboxAppendEntry(newtComponent co, const char *text,
 	} else {
 		item = li->boxItems = malloc(sizeof(struct items));
 	}
+	item->parent = NULL;
+	item->widget = NULL;
+/*
 	txt = formatText(text);
 	item->widget = gtk_list_item_new_with_label(txt);
 	free(txt);
@@ -452,11 +455,11 @@ int newtListboxAppendEntry(newtComponent co, const char *text,
 	style = gtk_style_copy(gnewt->gRootStyle);
 
 	gtk_widget_set_style(GTK_BIN(item->widget)->child, style);
-
+*/
 	if (!li->userHasSetWidth && text && (strlen(text) > li->curWidth))
 		updateWidth(co, li, strlen(text));
 
-	item->text = strdup(text);
+	item->text = strdup(text ? text : "(null)");
 	item->data = data;
 	item->next = NULL;
 	item->isSelected = 0;
@@ -474,8 +477,8 @@ int newtListboxInsertEntry(newtComponent co, const char *text,
 {
 	struct listbox *li = co->data;
 	struct items *item, *t;
-	GtkStyle *style;
-	char *txt;
+	/*GtkStyle *style;*/
+	/*char *txt;*/
 	int i = 0, tab, done;
 
 	if (li->boxItems) {
@@ -501,6 +504,7 @@ int newtListboxInsertEntry(newtComponent co, const char *text,
 		item = li->boxItems = malloc(sizeof(struct items));
 		item->next = NULL;
 	}
+/*
 	txt = formatText(text);
 	item->widget = gtk_list_item_new_with_label(txt);
 	free(txt);
@@ -508,6 +512,7 @@ int newtListboxInsertEntry(newtComponent co, const char *text,
 	style = gtk_style_copy(gnewt->gRootStyle);
 
 	gtk_widget_set_style(GTK_BIN(item->widget)->child, style);
+*/
 	if (!li->userHasSetWidth && text && (strlen(text) > li->curWidth))
 		updateWidth(co, li, strlen(text));
 
@@ -668,13 +673,15 @@ static void listboxDraw(newtComponent co)
 	struct listbox *li = co->data;
 	struct items *item;
 	GtkWidget *scrolled_win;
+	GtkStyle *style;
 
 	int i, j;
 
 	if (!co->isMapped)
 		return;
 
-	if (!li->parent) {
+	if (!li->widget || !GTK_IS_WIDGET(li->widget)) {
+		li->widget = gtk_list_new();
 		li->parent = gnewt->currentParent;
 		gtk_widget_show(li->widget);
 		scrolled_win = gtk_scrolled_window_new(NULL, NULL);
@@ -716,13 +723,22 @@ static void listboxDraw(newtComponent co)
 					(GTK_SCROLLED_WINDOW (scrolled_win)));
 	}
 
+	style = gtk_style_copy(gnewt->gRootStyle);
 	item = li->boxItems;
 	j = 0;
 	for (i = 0; item != NULL; i++, item = item->next) {
 		if (!item->text) {
 			continue;
 		}
-		if (!item->parent) {
+		if (!item->widget || !GTK_IS_WIDGET(item->widget)) {
+			char *txt;
+			txt = formatText(item->text);
+			item->widget = gtk_list_item_new_with_label(txt);
+			free(txt);
+			gtk_widget_set_style(item->widget, style); 
+			gtk_widget_set_style(GTK_BIN(item->widget)->child, 
+					style);
+
 			gnewt->currentParent = li->widget;
 			item->parent = gnewt->currentParent;
 			gtk_widget_show(item->widget);

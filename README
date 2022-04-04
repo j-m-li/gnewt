@@ -44,13 +44,25 @@ This can be usefull to have a full screen display.
 
 Install procedure :
 ===================
-        tar -xvzf gnewt_0.06-1.tgz
-	cd gnewt-0.06
+        tar -xvzf gnewt_0.07-1.tgz
+	cd gnewt-0.07
 	automake
 	./configure
 	make
 	make install
-	 
+
+TODO :
+======
+	- Destroy all widgets in newtCls() and re-create them in newtFormRun()
+	- Write a short gNewt specific tutorial
+	- Add an extended function to load newt or gNewt after the application
+	  startup? It will avoid the use of LD_PRELOAD. The feature should be
+	  optional.
+
+BUGS :
+======
+	- ?
+
 Contacts :
 ==========
 Please, report bugs or send comments to :
@@ -59,9 +71,4 @@ Please, report bugs or send comments to :
 
 	home page : http://oksid.ch/gnewt/
 
-	O'ksi'D    
-	Jean-Marc Lienher
-	Rue de la Cheminee 1
-	CH-2065 Savagnier
-	Switzerland 
 

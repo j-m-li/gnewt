@@ -72,7 +72,7 @@ newtComponent newtScale(int left, int top, int width, long long fullValue)
 	sc->fullValue = fullValue;
 	sc->charsSet = 0;
 	sc->parent = NULL;
-	sc->widget = gtk_progress_bar_new();
+	sc->widget = NULL; /*gtk_progress_bar_new();*/
 
 	return co;
 }
@@ -97,7 +97,10 @@ static void scaleDraw(newtComponent co)
 
 	if (co->top == -1)
 		return;
-	if (!sc->parent && GTK_IS_FIXED(gnewt->currentParent)) {
+	if ((!sc->widget || !GTK_IS_WIDGET(sc->widget)) && 
+			GTK_IS_FIXED(gnewt->currentParent)) 
+	{
+		sc->widget = gtk_progress_bar_new();
 		sc->parent = gnewt->currentParent;
 		style = gtk_style_copy(gnewt->gRootStyle);
 		if (gnewt->useNewtColor) {

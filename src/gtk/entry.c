@@ -112,7 +112,7 @@ newtComponent newtEntry(int left, int top, const char *initialValue,
 	en->bufUsed = 0;
 	en->bufAlloced = width + 1;
 	en->filter = NULL;
-	en->widget = gtk_entry_new();
+	en->widget = NULL; /*gtk_entry_new();*/
 	en->parent = NULL;
 
 	if (!(en->flags & NEWT_FLAG_DISABLED))
@@ -166,15 +166,8 @@ static void entryDraw(newtComponent co)
 	if (!co->isMapped)
 		return;
 
-	if (en->flags & NEWT_FLAG_DISABLED)
-		gtk_entry_set_editable(GTK_ENTRY(en->widget), FALSE);
-	else
-		gtk_entry_set_editable(GTK_ENTRY(en->widget), TRUE);
-
-	if (en->flags & NEWT_FLAG_HIDDEN) {
-		gtk_entry_set_visibility(GTK_ENTRY(en->widget), FALSE);
-	}
-	if (!en->parent) {
+	if (!en->widget || !GTK_IS_WIDGET(en->widget)) {
+		en->widget = gtk_entry_new();
 		en->parent = gnewt->currentParent;
 		gtk_widget_set_usize(en->widget,
 				     gnewt->FontSizeW * co->width,
@@ -193,6 +186,14 @@ static void entryDraw(newtComponent co)
 					  GTK_SIGNAL_FUNC
 					  (entryCallbackLeave),
 					  (GtkObject *) co);
+	}
+	if (en->flags & NEWT_FLAG_DISABLED)
+		gtk_entry_set_editable(GTK_ENTRY(en->widget), FALSE);
+	else
+		gtk_entry_set_editable(GTK_ENTRY(en->widget), TRUE);
+
+	if (en->flags & NEWT_FLAG_HIDDEN) {
+		gtk_entry_set_visibility(GTK_ENTRY(en->widget), FALSE);
 	}
 	gtk_entry_set_text(GTK_ENTRY(en->widget), en->buf);
 	/*newtRefresh();*/

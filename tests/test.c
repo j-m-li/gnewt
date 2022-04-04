@@ -67,6 +67,7 @@ int main(void)
 	}
 	/*****************************************************/
 	newtDrawRootText(0, 0, "Newt test program");
+	newtDrawRootText(10, 0, "Newt test program");
 	newtPushHelpLine(NULL);
 	newtDrawRootText(-50, 0, "More root text");
 
@@ -143,8 +144,8 @@ int main(void)
 	newtListboxSetCurrent(lb, 3);
 
 	t = newtTextbox(45, 10, 17, 5, NEWT_FLAG_WRAP);
-	newtTextboxSetText(t,
-			   "This is some text does it look okay?\nThis should be alone.\nThis shouldn't be printed");
+	newtTextboxSetText(t, "This is some text does it look okay?\n"
+			"This should be alone.\nThis shouldn't be printed");
 
 	newtFormAddComponents(f, lb, t, NULL);
 	newtRefresh();
@@ -155,6 +156,13 @@ int main(void)
 		if (answer == b2) {
 			newtScaleSet(scale, atoi(scaleVal));
 			newtLabelSetText(l1, "|Scale:");
+
+			newtPopWindow();
+			newtPopWindow();
+			newtCls();
+			newtOpenWindow(1, 1, 10, 6, "test");
+			newtOpenWindow(10, 5, 65, 16, "window 2");
+
 			newtRefresh();
 			answer = NULL;
 		}

@@ -1,9 +1,6 @@
 #!/usr/bin/make -f
 
-# debian/rules file for gtk+ Debian package
-# written April 1998 by Ben Gertzfield <che@debian.org
-
-version=0.06
+version=0.07
 
 build: build-stamp
 build-stamp:

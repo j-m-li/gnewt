@@ -74,14 +74,14 @@ LN_S = ln -s
 MAJOR_VERSION = 0
 MAKEINFO = makeinfo
 MICRO_VERSION = 1
-MINOR_VERSION = 6
+MINOR_VERSION = 7
 NM = /usr/bin/nm -B
 OBJDUMP = @OBJDUMP@
 PACKAGE = gnewt
 RANLIB = ranlib
 STRIP_BEGIN = $(strip
 STRIP_END = )
-VERSION = 0.6.1
+VERSION = 0.7.1
 
 INCLUDES = $(strip 	-I$(top_srcdir) 	-I$(top_srcdir)/include/newt 	-I$(top_srcdir)/include/gnewt )
 

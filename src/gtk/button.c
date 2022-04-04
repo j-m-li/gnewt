@@ -73,7 +73,7 @@ static newtComponent createButton(int left, int row, const char *text,
 
 	bu->text = strdup(text);
 	bu->compact = compact;
-	bu->widget = gtk_button_new();
+	bu->widget = NULL; /*gtk_button_new();*/
 	bu->parent = NULL;
 	bu->pixmap = gnewt->buttonPixmap;
 	bu->mask = gnewt->buttonMask;
@@ -159,6 +159,11 @@ static void buttonFocusCb(newtComponent co)
 		co->callback(co, co->callbackData);
 }
 
+static void buttonDestroyed(newtComponent co)
+{
+	struct button *bu = co->data;
+	bu->widget = NULL;
+}
 
 static void buttonDrawIt(newtComponent co, int active, int pushed)
 {
@@ -167,8 +172,9 @@ static void buttonDrawIt(newtComponent co, int active, int pushed)
 
 	if (!co->isMapped)
 		return;
-	if (!bu->parent) {
+	if (!bu->widget || !GTK_IS_WIDGET(bu->widget)) {
 		GtkWidget *label, *box;
+		bu->widget = gtk_button_new();
 		box = gtk_hbox_new(FALSE, 0);
 		gtk_container_set_border_width(GTK_CONTAINER(box), 0);
 		gtk_widget_show(box);
@@ -231,7 +237,6 @@ static void buttonDrawIt(newtComponent co, int active, int pushed)
 		gtk_container_add(GTK_CONTAINER(bu->widget), box);
 		gtk_container_set_border_width(GTK_CONTAINER(bu->widget),
 					       0);
-		gtk_widget_show(bu->widget);
 		gtk_widget_set_style(bu->widget, style);
 		gtk_widget_set_style(GTK_BIN(bu->widget)->child, style);
 		if (bu->compact) {
@@ -255,7 +260,13 @@ static void buttonDrawIt(newtComponent co, int active, int pushed)
 					  "enter_notify_event",
 					  GTK_SIGNAL_FUNC(buttonFocusCb),
 					  (GtkObject *) co);
+/*
+		gtk_signal_connect_object(GTK_OBJECT(bu->widget), "destroy",
+	                         	GTK_SIGNAL_FUNC(buttonDestroyed),
+		                        (GtkObject *) co);
+*/
 	}
+	gtk_widget_show(bu->widget);
 	/*newtRefresh();*/
 }
 

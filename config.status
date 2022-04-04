@@ -59,14 +59,14 @@ s%@oldincludedir@%/usr/include%g
 s%@infodir@%${prefix}/info%g
 s%@mandir@%${prefix}/man%g
 s%@MAJOR_VERSION@%0%g
-s%@MINOR_VERSION@%6%g
+s%@MINOR_VERSION@%7%g
 s%@MICRO_VERSION@%1%g
 s%@SET_MAKE@%%g
 s%@INSTALL_PROGRAM@%${INSTALL}%g
 s%@INSTALL_SCRIPT@%${INSTALL_PROGRAM}%g
 s%@INSTALL_DATA@%${INSTALL} -m 644%g
 s%@PACKAGE@%gnewt%g
-s%@VERSION@%0.6.1%g
+s%@VERSION@%0.7.1%g
 s%@ACLOCAL@%aclocal%g
 s%@AUTOCONF@%autoconf%g
 s%@AUTOMAKE@%automake%g
@@ -230,9 +230,9 @@ for ac_file in .. $CONFIG_HEADERS; do if test "x$ac_file" != x..; then
 ${ac_dA}PACKAGE${ac_dB}PACKAGE${ac_dC}"gnewt"${ac_dD}
 ${ac_uA}PACKAGE${ac_uB}PACKAGE${ac_uC}"gnewt"${ac_uD}
 ${ac_eA}PACKAGE${ac_eB}PACKAGE${ac_eC}"gnewt"${ac_eD}
-${ac_dA}VERSION${ac_dB}VERSION${ac_dC}"0.6.1"${ac_dD}
-${ac_uA}VERSION${ac_uB}VERSION${ac_uC}"0.6.1"${ac_uD}
-${ac_eA}VERSION${ac_eB}VERSION${ac_eC}"0.6.1"${ac_eD}
+${ac_dA}VERSION${ac_dB}VERSION${ac_dC}"0.7.1"${ac_dD}
+${ac_uA}VERSION${ac_uB}VERSION${ac_uC}"0.7.1"${ac_uD}
+${ac_eA}VERSION${ac_eB}VERSION${ac_eC}"0.7.1"${ac_eD}
 ${ac_dA}STDC_HEADERS${ac_dB}STDC_HEADERS${ac_dC}1${ac_dD}
 ${ac_uA}STDC_HEADERS${ac_uB}STDC_HEADERS${ac_uC}1${ac_uD}
 ${ac_eA}STDC_HEADERS${ac_eB}STDC_HEADERS${ac_eC}1${ac_eD}

@@ -295,9 +295,6 @@ void newtResume(void)
 	if (gnewt->showBackground) gtk_widget_show_all(motherWindow);
 }
 
-void newtCls(void)
-{
-}
 
 void newtResizeScreen(int redraw)
 {
@@ -357,6 +354,7 @@ static gint keyPressedCallback(gpointer unused, GdkEventKey * event)
 
 static void mainQuit(void)
 {
+	if (!gtk_main_level()) return;
 	gnewt->pressedKey = NEWT_KEY_F12;
 	if (motherWindow) {
 		newtRefresh();
@@ -408,7 +406,6 @@ int newtInit(void)
 
 	gnewt->gRootStyle = gtk_style_copy(style);
 
-
 	gnewt->FontSizeH = style->font->ascent + style->font->descent + 2;
 	gnewt->FontSizeW = gdk_char_measure(style->font, '_');
 
@@ -416,10 +413,11 @@ int newtInit(void)
 	if (var) {
 		char **size;
 		size = g_strsplit(var, "x", -1);
-		if (size[0])
+		if (size[0]) {
 			gnewt->FontSizeH = atoi(size[0]);
-		if (size[1])
-			gnewt->FontSizeW = atoi(size[1]);
+			if (size[1])
+				gnewt->FontSizeW = atoi(size[1]);
+		}
 	}
 
 	if (gnewt->FontSizeH < 14)
@@ -429,10 +427,12 @@ int newtInit(void)
 	ScreenW = gnewt->FontSizeW * ScreenCols;
 	ScreenH = gnewt->FontSizeH * ScreenRows;
 
-
-	gtk_signal_connect_object(GTK_OBJECT(win), "key_press_event",
-				  GTK_SIGNAL_FUNC(keyPressedCallback),
-				  NULL);
+	if (gnewt->showBackground) {
+		gtk_signal_connect_object(GTK_OBJECT(win), 
+			"key_press_event",
+			GTK_SIGNAL_FUNC(keyPressedCallback),
+		 	NULL);
+	}
 	gtk_widget_set_events(win, GDK_KEY_PRESS_MASK);
 	gtk_widget_set_usize(win, ScreenW, ScreenH);
 
@@ -446,31 +446,45 @@ int newtInit(void)
 	gtk_container_set_border_width(GTK_CONTAINER(win), 0);
 	if (gnewt->showBackground) gtk_widget_show(win);
 
-	gtk_widget_push_style(style);
+	/* Kill the child process when it calls exit() because exit() closes
+	   all file descriptors and GDK doesn't like that :-) */
+	mainPid = getpid();
+	atexit(killChild);
+	newtCls();
+	gnewt->pressedKey = 0;
+	return 0;
+}
+
+/*FIXME*/
+static GtkWidget *RealRootWindow = NULL;
+
+void newtCls(void)
+{
+	GtkStyle *style;
+
+	if (gnewt->currentWindow) return;
+
+	/*gnewt->gRootWindow = RealRootWindow; */
+	if (gnewt->gRootWindow && GTK_IS_WIDGET(gnewt->gRootWindow)) {
+		return;
+		gtk_widget_destroy(gnewt->gRootWindow);
+	}
+	
 	style = gtk_style_copy(gnewt->gRootStyle);
 	if (gnewt->useNewtColor) {
 		style->bg[0] = getColorByName(gnewt->globalColors->rootBg);
 	}
-	gnewt->gRootWindow = gtk_fixed_new();
+	RealRootWindow = gnewt->gRootWindow = gtk_fixed_new();
 	gtk_widget_set_style(gnewt->gRootWindow, style);
-	gtk_widget_pop_style();
 
 	gtk_container_set_border_width(GTK_CONTAINER(gnewt->gRootWindow), 0);
 
-	gtk_container_add(GTK_CONTAINER(win), gnewt->gRootWindow);
+	gtk_container_add(GTK_CONTAINER(motherWindow), gnewt->gRootWindow);
 	gtk_widget_show(gnewt->gRootWindow);
 	gnewt->currentParent = gnewt->gRootWindow;
 
 	gtk_signal_connect_object(GTK_OBJECT(gnewt->gRootWindow), "destroy",
 				  GTK_SIGNAL_FUNC(mainQuit), NULL);
-
-	/* Kill the child process when it calls exit() because exit() closes
-	   all file descriptors and GDK doesn't like that :-) */
-	mainPid = getpid();
-	atexit(killChild);
-
-	gnewt->pressedKey = 0;
-	return 0;
 }
 
 int newtFinished(void)
@@ -562,7 +576,6 @@ int newtGetKey(void)
 
 void newtWaitForKey(void)
 {
-	/*newtRefresh();*/
 	newtClearKeyBuffer();
 }
 
@@ -618,9 +631,15 @@ int newtOpenWindow(int left, int top, int width, int height,
 		gtk_window_set_title (GTK_WINDOW(tlevel), title);
 		GTK_WINDOW(tlevel)->allow_shrink = TRUE;
 		GTK_WINDOW(tlevel)->allow_grow = FALSE;
-		gtk_widget_show(tlevel);
-		gtk_widget_show(fix);
+		gtk_widget_realize(tlevel);
+		gtk_widget_realize(fix);
 		gnewt->currentWindow->top_widget = tlevel;
+		gtk_signal_connect_object(GTK_OBJECT(tlevel), "destroy",
+                                   GTK_SIGNAL_FUNC(mainQuit), NULL);
+                gtk_signal_connect_object(GTK_OBJECT(tlevel),
+                        	"key_press_event",
+                        	GTK_SIGNAL_FUNC(keyPressedCallback),
+                        	NULL);
 	} 
 	window = gtk_fixed_new();
 	
@@ -666,7 +685,6 @@ int newtOpenWindow(int left, int top, int width, int height,
 	
 	gtk_widget_show(win);
 	gtk_widget_show(window);
-	newtRefresh();
 	pixmap = gdk_pixmap_new(win->window, 
 			gnewt->FontSizeH * (width + 3),
 			gnewt->FontSizeH * (height + 3) - 3, -1);
@@ -798,7 +816,6 @@ int newtOpenWindow(int left, int top, int width, int height,
 	gtk_widget_show(bg1);
 	gdk_pixmap_unref(pixmap);
 	gdk_pixmap_unref(pixmap1);
-	/*newtRefresh();*/
 }
 
 int newtCenteredWindow(int width, int height, const char *title)
@@ -838,6 +855,7 @@ void newtPopWindow(void)
 
 	if (gnewt->currentWindow == windowStack) {
 		gnewt->currentWindow = NULL;
+		if (!gnewt->showBackground) gnewt->gRootWindow = NULL;
 		gnewt->currentParent = gnewt->gRootWindow;
 	} else {
 		gnewt->currentWindow--;
@@ -973,48 +991,11 @@ void newtPopHelpLine(void)
 
 }
 
-void extendedFeatures(const char *text)
-{
-	GtkWidget *wpixmap;
-	GdkPixmap *pixmap;
-	GdkBitmap *mask;
-	char *cmd[15];
-	char *txt = strdup(text);
-	int i = 1;
-	cmd[0] = txt;
-	cmd[1] = "";
-	while (*txt) {
-		if (*txt == '\v') {
-			*txt = '\0';
-			cmd[i] = txt + 1;
-			i++;
-		}
-		txt++;
-	}
-	/* printf ("%s -- extended!!\n", text); */
-	if (!strcmp(cmd[1], "root_xpm")) {
-		pixmap = gdk_pixmap_create_from_xpm(gnewt->gRootWindow->window,
-						    &mask,
-						    &gnewt->gRootStyle->
-						    bg[GTK_STATE_NORMAL],
-						    cmd[2]);
-		if (pixmap) {
-			wpixmap = gtk_pixmap_new(pixmap, mask);
-			gdk_pixmap_unref(pixmap);
-			gdk_pixmap_unref(mask);
-			gtk_fixed_put(GTK_FIXED(gnewt->gRootWindow),
-				      wpixmap, atoi(cmd[3]) * gnewt->FontSizeW,
-				      atoi(cmd[4]) * gnewt->FontSizeH);
-			gtk_widget_show(wpixmap);
-		}
-	}
-	free(cmd[0]);
-}
-
 void newtDrawRootText(int col, int row, const char *text)
 {
-	GtkWidget *w;
+	GtkWidget *w, *bgWidget;
 	GtkStyle *style;
+	int len1, len2;
 
 	if (col < 0) {
 		col = ScreenCols + col;
@@ -1028,11 +1009,20 @@ void newtDrawRootText(int col, int row, const char *text)
 	style = gtk_style_copy(gnewt->gRootStyle);
 	if (gnewt->useNewtColor) {
 		style->fg[0] = getColorByName(gnewt->globalColors->rootTextFg);
+		style->bg[0] = getColorByName(gnewt->globalColors->rootTextBg);
 	}
-	gtk_widget_set_style(w, style);
-	gtk_widget_show(w);
-	gtk_fixed_put(GTK_FIXED(gnewt->gRootWindow), w,
+	len1 = strlen(text) * gnewt->FontSizeW;
+        len2 = gdk_string_width (gnewt->gRootStyle->font, text);
+        if (len2 > len1) len1 = len2;
+	bgWidget = gtk_fixed_new();
+        gtk_widget_set_usize(bgWidget, len1, gnewt->FontSizeH);
+        gtk_widget_show(bgWidget);
+	gtk_fixed_put(GTK_FIXED(gnewt->gRootWindow), bgWidget,
 		      gnewt->FontSizeW * col, gnewt->FontSizeH * row);
+        gtk_fixed_put(GTK_FIXED(bgWidget), w, 0, 0);
+	gtk_widget_set_style(w, style);
+	gtk_widget_set_style(bgWidget, style);
+	gtk_widget_show(w);
 }
 
 int newtSetFlags(int oldFlags, int newFlags, enum newtFlagsSense sense)

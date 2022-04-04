@@ -8,12 +8,12 @@ INCLUDES = @STRIP_BEGIN@ \
 noinst_PROGRAMS = test test_ja testtree testgrid
 
 test_SOURCES = test.c
-test_LDADD = ../src/gtk/.libs/libgnewt.a #/usr/lib/libefence.a
-#test_LDADD = -lnewt
+#test_LDADD = ../src/gtk/.libs/libgnewt.a /usr/lib/libefence.a
+test_LDADD = -lnewt
 
 test_ja_SOURCES = test_ja.c
-#test_ja_LDADD = ../src/gtk/.libs/libgnewt.a
-test_ja_LDADD = -lgnewt
+test_ja_LDADD = ../src/gtk/.libs/libgnewt.a
+#test_ja_LDADD = -lgnewt
 
 testtree_SOURCES = testtree.c
 testtree_LDADD = ../src/gtk/.libs/libgnewt.a

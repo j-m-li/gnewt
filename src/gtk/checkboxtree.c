@@ -398,7 +398,7 @@ newtComponent newtCheckboxTreeMulti(int left, int top, int height,
 	ct->currItem = NULL;
 	ct->flatList = NULL;
 	ct->parent = NULL;
-	ct->widget = gtk_tree_new();
+	ct->widget = NULL; /*gtk_tree_new();*/
 
 	if (seq)
 		ct->seq = strdup(seq);
@@ -532,7 +532,8 @@ static void ctDraw(newtComponent co)
 
 	if (!co->isMapped)
 		return;
-	if (!ct->parent) {
+	if (!ct->widget || !GTK_IS_WIDGET(ct->widget)) {
+		ct->widget = gtk_tree_new();
 		ct->parent = gnewt->currentParent;
 		gtk_widget_show(ct->widget);
 		scrolled_win = gtk_scrolled_window_new(NULL, NULL);
@@ -582,13 +583,14 @@ static void ctDraw(newtComponent co)
 		char tmp[100];
 		sprintf(tmp, "[%c] %s", ct->seq[0], (*item)->text);
 
-		if ((*item)->widget) {
+		if ((*item)->widget && GTK_IS_WIDGET((*item)->widget)) {
 			gtk_widget_destroy((*item)->widget);
 		}
 		(*item)->num = i;
 		(*item)->parentObj = co;
 		if ((*item)->branch) {
-			(*item)->widget = gtk_tree_item_new_with_label(tmp);
+			(*item)->widget = 
+				gtk_tree_item_new_with_label((*item)->text);
 
 			gtk_tree_append(GTK_TREE
 					(currentNode[(*item)->depth]),

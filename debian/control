@@ -4,7 +4,7 @@ Priority: Optional
 Maintainer: O'ksi'D <nickasil@linuxave.net>
 Standards-Version: 2.4.0.0
 
-Package: libgnewt0.06
+Package: libgnewt0.07
 Architecture: any
 Section: base
 Priority: Required

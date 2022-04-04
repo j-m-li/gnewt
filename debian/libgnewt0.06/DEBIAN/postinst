@@ -1,8 +1,0 @@
-#!/bin/sh -e
-# Automatically added by dh_installdocs
-if [ "$1" = "configure" ]; then
-	if [ -d /usr/doc -a ! -e /usr/doc/libgnewt0.06 -a -d /usr/share/doc/libgnewt0.06 ]; then
-		ln -sf ../share/doc/libgnewt0.06 /usr/doc/libgnewt0.06
-	fi
-fi
-# End automatically added section

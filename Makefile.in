@@ -85,7 +85,7 @@ VERSION = @VERSION@
 
 EXTRA_DIST = README gnewt.spec.in
 
-SUBDIRS = src  tests utils samples doc include
+SUBDIRS = src  tests utils samples doc include 
 ACLOCAL_M4 = $(top_srcdir)/aclocal.m4
 mkinstalldirs = $(SHELL) $(top_srcdir)/mkinstalldirs
 CONFIG_HEADER = config.h

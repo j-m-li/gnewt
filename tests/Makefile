@@ -74,14 +74,14 @@ LN_S = ln -s
 MAJOR_VERSION = 0
 MAKEINFO = makeinfo
 MICRO_VERSION = 1
-MINOR_VERSION = 6
+MINOR_VERSION = 7
 NM = /usr/bin/nm -B
 OBJDUMP = @OBJDUMP@
 PACKAGE = gnewt
 RANLIB = ranlib
 STRIP_BEGIN = $(strip
 STRIP_END = )
-VERSION = 0.6.1
+VERSION = 0.7.1
 
 INCLUDES = $(strip         -I$(top_srcdir)         -I$(top_srcdir)/include/newt         -I$(top_srcdir)/include/gnewt )
 
@@ -89,12 +89,12 @@ INCLUDES = $(strip         -I$(top_srcdir)         -I$(top_srcdir)/include/newt 
 noinst_PROGRAMS = test test_ja testtree testgrid
 
 test_SOURCES = test.c
-test_LDADD = ../src/gtk/.libs/libgnewt.a #/usr/lib/libefence.a
-#test_LDADD = -lnewt
+#test_LDADD = ../src/gtk/.libs/libgnewt.a /usr/lib/libefence.a
+test_LDADD = -lnewt
 
 test_ja_SOURCES = test_ja.c
-#test_ja_LDADD = ../src/gtk/.libs/libgnewt.a
-test_ja_LDADD = -lgnewt
+test_ja_LDADD = ../src/gtk/.libs/libgnewt.a
+#test_ja_LDADD = -lgnewt
 
 testtree_SOURCES = testtree.c
 testtree_LDADD = ../src/gtk/.libs/libgnewt.a
@@ -112,10 +112,10 @@ CPPFLAGS =
 LDFLAGS = 
 LIBS =  -L/usr/lib -lglib -L/usr/lib -L/usr/X11R6/lib -lgtk -lgdk -rdynamic -lgmodule -lgthread -lglib -lpthread -ldl -lXi -lXext -lX11 -lm
 test_OBJECTS =  test.o
-test_DEPENDENCIES =  ../src/gtk/.libs/libgnewt.a
+test_DEPENDENCIES = 
 test_LDFLAGS = 
 test_ja_OBJECTS =  test_ja.o
-test_ja_DEPENDENCIES = 
+test_ja_DEPENDENCIES =  ../src/gtk/.libs/libgnewt.a
 test_ja_LDFLAGS = 
 testtree_OBJECTS =  testtree.o
 testtree_DEPENDENCIES =  ../src/gtk/.libs/libgnewt.a
