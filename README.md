@@ -59,16 +59,7 @@ TODO :
 	  startup? It will avoid the use of LD_PRELOAD. The feature should be
 	  optional.
 
-BUGS :
-======
-	- ?
 
-Contacts :
-==========
-Please, report bugs or send comments to :
-
-	mailto:nickasil@linuxave.net
-
-	home page : http://oksid.ch/gnewt/
-
-
+![](nt_test.jpg)
+![](scr_inst.jpg)
+![](scr_test.jpg)
